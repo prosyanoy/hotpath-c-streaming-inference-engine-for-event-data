@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hotpath.fullname" . }}
+  labels: {{- include "hotpath.labels" . | nindent 4 }}
+    app.kubernetes.io/component: engine
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: {{- include "hotpath.selector" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "hotpath.labels" . | nindent 8 }}
+        app.kubernetes.io/component: engine
+      annotations:
+        checksum/config: {{ toYaml .Values.config | sha256sum }}
+        {{- if .Values.prometheus.annotations }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+        prometheus.io/path: /metrics
+        {{- end }}
+    spec:
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: hotpath
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext: {{- toYaml .Values.securityContext | nindent 12 }}
+          env:
+            - {name: HOTPATH_SOURCE, value: {{ .Values.config.source | quote }}}
+            - {name: HOTPATH_RATE, value: {{ .Values.config.rate | quote }}}
+            - {name: HOTPATH_ANOMALY_RATE, value: {{ .Values.config.anomalyRate | quote }}}
+            - {name: HOTPATH_WORKERS, value: {{ .Values.config.workers | quote }}}
+            - {name: HOTPATH_BATCH_SIZE, value: {{ .Values.config.batchSize | quote }}}
+            - {name: HOTPATH_BATCH_TIMEOUT_US, value: {{ .Values.config.batchTimeoutUs | quote }}}
+            - {name: HOTPATH_HEC_BATCH, value: {{ .Values.config.hecBatch | quote }}}
+            - {name: HOTPATH_HEC_FLUSH_MS, value: {{ .Values.config.hecFlushMs | quote }}}
+            {{- if .Values.config.overflow }}
+            - {name: HOTPATH_OVERFLOW, value: {{ .Values.config.overflow | quote }}}
+            {{- end }}
+            - {name: HOTPATH_METRICS_PORT, value: {{ .Values.metrics.port | quote }}}
+            - {name: HOTPATH_HEC_URL, value: {{ include "hotpath.hecUrl" . | quote }}}
+            - name: HOTPATH_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hotpath.secretName" . }}
+                  key: hec-token
+          ports:
+            - {name: metrics, containerPort: {{ .Values.metrics.port }}}
+            {{- if eq .Values.config.source "tcp" }}
+            - {name: ingest, containerPort: 9200}
+            {{- end }}
+          livenessProbe:
+            httpGet: {path: /healthz, port: metrics}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /readyz, port: metrics}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources: {{- toYaml .Values.resources | nindent 12 }}

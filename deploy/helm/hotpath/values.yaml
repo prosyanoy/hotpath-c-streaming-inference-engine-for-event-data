@@ -1,0 +1,64 @@
+image:
+  repository: hotpath
+  tag: dev
+  pullPolicy: IfNotPresent   # images are side-loaded into kind, never pulled
+
+replicaCount: 1
+
+# Everything below maps 1:1 to HOTPATH_* environment variables (see .env.example).
+config:
+  source: synthetic          # synthetic | tcp
+  rate: 5000                 # synthetic events/sec
+  anomalyRate: 0.01
+  workers: 2
+  batchSize: 256
+  batchTimeoutUs: 2000
+  hecBatch: 100
+  hecFlushMs: 200
+  overflow: ""               # block | drop ("" = default for the source)
+
+hec:
+  # Token shared by hotpath and the mock receiver. Placeholder for local use; for anything real,
+  # create your own Secret and set existingSecret (key: hec-token) instead.
+  token: dev-token-not-secret
+  existingSecret: ""
+  # Used only when mockHec.enabled=false.
+  url: ""
+
+mockHec:
+  enabled: true
+  image:
+    repository: hotpath-mock-hec
+    tag: dev
+    pullPolicy: IfNotPresent
+  resources:
+    requests: {cpu: 50m, memory: 64Mi}
+    limits: {memory: 256Mi}
+
+metrics:
+  port: 9100
+
+service:
+  type: ClusterIP
+
+# Scrape via annotations (works with the stock Prometheus kubernetes_sd example config).
+prometheus:
+  annotations: true
+
+# Requires the Prometheus Operator CRDs (kube-prometheus-stack).
+serviceMonitor:
+  enabled: false
+  interval: 15s
+  labels: {}
+
+resources:
+  requests: {cpu: 500m, memory: 256Mi}
+  limits: {memory: 512Mi}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities: {drop: [ALL]}

@@ -1,0 +1,46 @@
+{{- if .Values.mockHec.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hotpath.fullname" . }}-mock-hec
+  labels: {{- include "hotpath.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mock-hec
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "hotpath.mockSelector" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "hotpath.labels" . | nindent 8 }}
+        app.kubernetes.io/component: mock-hec
+    spec:
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mock-hec
+          image: "{{ .Values.mockHec.image.repository }}:{{ .Values.mockHec.image.tag }}"
+          imagePullPolicy: {{ .Values.mockHec.image.pullPolicy }}
+          securityContext: {{- toYaml .Values.securityContext | nindent 12 }}
+          env:
+            - name: HOTPATH_HEC_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "hotpath.secretName" . }}
+                  key: hec-token
+          ports:
+            - {name: hec, containerPort: 8088}
+          readinessProbe:
+            httpGet: {path: /services/collector/health, port: hec}
+            periodSeconds: 5
+          resources: {{- toYaml .Values.mockHec.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hotpath.fullname" . }}-mock-hec
+  labels: {{- include "hotpath.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mock-hec
+spec:
+  selector: {{- include "hotpath.mockSelector" . | nindent 4 }}
+  ports:
+    - {name: hec, port: 8088, targetPort: hec}
+{{- end }}

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hotpath.fullname" . }}
+  labels: {{- include "hotpath.labels" . | nindent 4 }}
+    app.kubernetes.io/component: engine
+spec:
+  type: {{ .Values.service.type }}
+  selector: {{- include "hotpath.selector" . | nindent 4 }}
+  ports:
+    - {name: metrics, port: {{ .Values.metrics.port }}, targetPort: metrics}
+    {{- if eq .Values.config.source "tcp" }}
+    - {name: ingest, port: 9200, targetPort: ingest}
+    {{- end }}

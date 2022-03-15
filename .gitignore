@@ -1,0 +1,25 @@
+# build output
+build/
+build-*/
+cmake-build-*/
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+# generated artifacts
+models/
+bench/results/
+# secrets / local config
+.env
+.env.*
+!.env.example
+# editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+# helm
+deploy/helm/*/charts/*.tgz

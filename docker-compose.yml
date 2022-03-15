@@ -1,0 +1,25 @@
+# Local demo: mock Splunk HEC + HotPath scoring a synthetic stream.
+#   docker compose up --build        then:  curl localhost:9100/metrics   |   curl localhost:8088/stats
+services:
+  mock-hec:
+    build:
+      context: .
+      dockerfile: deploy/docker/mock-hec.Dockerfile
+    environment:
+      HOTPATH_HEC_TOKEN: ${HOTPATH_HEC_TOKEN:-dev-token-not-secret}
+    ports:
+      - "8088:8088"
+
+  hotpath:
+    build:
+      context: .
+      dockerfile: deploy/docker/Dockerfile
+    depends_on:
+      - mock-hec
+    environment:
+      HOTPATH_HEC_URL: http://mock-hec:8088/services/collector/event
+      HOTPATH_HEC_TOKEN: ${HOTPATH_HEC_TOKEN:-dev-token-not-secret}
+      HOTPATH_RATE: ${HOTPATH_RATE:-5000}
+      HOTPATH_WORKERS: ${HOTPATH_WORKERS:-2}
+    ports:
+      - "9100:9100"

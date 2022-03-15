@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hotpath
+description: HotPath streaming anomaly-inference engine with a mock Splunk HEC receiver
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

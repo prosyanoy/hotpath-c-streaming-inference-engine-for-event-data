@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="900" height="420" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" role="img" aria-label="HotPath C++ vs Python baseline: events per second and latency">
+<rect width="900" height="420" fill="#ffffff"/>
+<text x="40" y="30" font-size="18" font-weight="700" fill="#1b1f24">HotPath (C++) vs Python baseline: same model, same pipeline</text>
+<rect x="640" y="16" width="12" height="12" rx="2" fill="#1f6feb"/><text x="658" y="27" font-size="12" fill="#1b1f24">C++</text>
+<rect x="710" y="16" width="12" height="12" rx="2" fill="#e8710a"/><text x="728" y="27" font-size="12" fill="#1b1f24">Python</text>
+<text x="40" y="62" font-size="16" font-weight="600" fill="#1b1f24">Throughput: 5.0x</text>
+<text x="40" y="82" font-size="12" fill="#57606a">events/sec, unbounded ingest, higher is better</text>
+<line x1="40" y1="340" x2="440" y2="340" stroke="#57606a" stroke-width="1"/>
+<rect x="184.0" y="127.0" width="52" height="213.0" rx="3" fill="#1f6feb"/>
+<text x="210.0" y="121.0" font-size="12" font-weight="600" text-anchor="middle" fill="#1b1f24">403k</text>
+<rect x="242.0" y="297.7" width="52" height="42.3" rx="3" fill="#e8710a"/>
+<text x="268.0" y="291.7" font-size="12" font-weight="600" text-anchor="middle" fill="#1b1f24">80k</text>
+<text x="240.0" y="360" font-size="12" text-anchor="middle" fill="#1b1f24">end to end</text>
+<text x="40" y="382" font-size="11" fill="#57606a">events per second</text>
+<text x="480" y="62" font-size="16" font-weight="600" fill="#1b1f24">Latency at 40k events/sec: p99 1.7x lower</text>
+<text x="480" y="82" font-size="12" fill="#57606a">ingest to scored, lower is better</text>
+<line x1="480" y1="340" x2="880" y2="340" stroke="#57606a" stroke-width="1"/>
+<rect x="524.0" y="281.1" width="52" height="58.9" rx="3" fill="#1f6feb"/>
+<text x="550.0" y="275.1" font-size="12" font-weight="600" text-anchor="middle" fill="#1b1f24">1.6 ms</text>
+<rect x="582.0" y="272.5" width="52" height="67.5" rx="3" fill="#e8710a"/>
+<text x="608.0" y="266.5" font-size="12" font-weight="600" text-anchor="middle" fill="#1b1f24">1.8 ms</text>
+<text x="580.0" y="360" font-size="12" text-anchor="middle" fill="#1b1f24">p50</text>
+<rect x="724.0" y="212.4" width="52" height="127.6" rx="3" fill="#1f6feb"/>
+<text x="750.0" y="206.4" font-size="12" font-weight="600" text-anchor="middle" fill="#1b1f24">3.4 ms</text>
+<rect x="782.0" y="127.0" width="52" height="213.0" rx="3" fill="#e8710a"/>
+<text x="808.0" y="121.0" font-size="12" font-weight="600" text-anchor="middle" fill="#1b1f24">5.7 ms</text>
+<text x="780.0" y="360" font-size="12" text-anchor="middle" fill="#1b1f24">p99</text>
+<text x="480" y="382" font-size="11" fill="#57606a">milliseconds</text>
+<text x="40" y="404" font-size="11" fill="#57606a">2-CPU VM, 2 workers, batch 256, median of 3 runs. Reproduce: make bench, then make chart</text>
+</svg>

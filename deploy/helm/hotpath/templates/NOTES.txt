@@ -1,0 +1,11 @@
+HotPath is deployed.
+
+  kubectl port-forward svc/{{ include "hotpath.fullname" . }} {{ .Values.metrics.port }}:{{ .Values.metrics.port }}
+  curl -s localhost:{{ .Values.metrics.port }}/metrics | grep hotpath_
+
+{{- if .Values.mockHec.enabled }}
+
+Alerts delivered to the mock Splunk HEC receiver:
+  kubectl port-forward svc/{{ include "hotpath.fullname" . }}-mock-hec 8088:8088
+  curl -s localhost:8088/stats
+{{- end }}
